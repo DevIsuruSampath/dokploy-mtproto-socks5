@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  mtproto:
+    image: telegrammessenger/proxy:latest
+    ports:
+      - "${MTPROTO_PORT:-8443}:443"
+    volumes:
+      - mtproto_data:/data
+    networks:
+      - dokploy-network
+    restart: unless-stopped
+
+  socks5:
+    image: ghcr.io/tarampampam/3proxy:1
+    ports:
+      - "${SOCKS5_PORT:-1080}:1080"
+    environment:
+      PROXY_LOGIN: ${SOCKS5_USER}
+      PROXY_PASSWORD: ${SOCKS5_PASS}
+      SOCKS_PORT: 1080
+      LOG_OUTPUT: /dev/stdout
+    networks:
+      - dokploy-network
+    restart: unless-stopped
+
+volumes:
+  mtproto_data:
+
+networks:
+  dokploy-network:
+    external: true
